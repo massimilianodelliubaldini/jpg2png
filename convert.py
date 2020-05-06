@@ -1,4 +1,5 @@
 import os
+import sys
 import glob
 import threading
 from PIL import Image
@@ -29,9 +30,11 @@ def jpg2png_t(files, a, b, num_files):
             png = img.save(out, format='PNG', compress_level=0, interlace=False)
             img.close()
             os.remove(file)
-            print('Completed (' + str(updtotal()) + '/' + str(num_files) + ').')
-        except:
-            print('FAILED (' + file + ').')
+            print('Completed ' + file + ' (' + str(updtotal()) + '/' + str(num_files) + ').')
+        except Image.DecompressionBombError:
+            print('Error on '  + file + ' (' + str(updtotal()) + '/' + str(num_files) + '): file is too large.')
+        except Exception:
+            print('Error on '  + file + ' (' + str(updtotal()) + '/' + str(num_files) + '): unknown error.')
 
 def jpg2png(path, num_threads):
 
@@ -66,3 +69,7 @@ def jpg2png(path, num_threads):
 
 def jpeg2png(path, num_threads):
     jpg2png(path, num_threads)
+
+
+if __name__ == "__main__":
+    jpg2png(sys.argv[1], int(sys.argv[2]))
